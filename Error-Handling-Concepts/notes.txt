@@ -1,0 +1,33 @@
+Ansible Error Handling Concepts:
+
+Error handling is essential for ensuring tasks and playbooks can gracefully handle failures or unexpected results. Here are the primary methods and concepts for handling errors in Ansible:
+1. ignore_errors:
+
+Use ignore_errors: yes to allow a task to continue even if it fails. This can be helpful for non-critical tasks where failure doesn’t impact the overall workflow.
+
+2. Failed_when:
+
+The failed_when condition allows you to define custom failure criteria for a task. This is useful when a task might return a non-zero status that isn’t actually a failure.
+
+
+3. rescue and always Blocks:
+
+
+Ansible’s block structure supports rescue and always blocks, similar to try-except-finally in programming.
+
+block: Defines a set of tasks to try.
+rescue: Executes if any task in the block fails, letting you define alternative actions or recovery steps.
+always: Executes regardless of success or failure, useful for cleanup or final notifications.
+
+
+4. Event Logging for Troubleshooting:
+
+   Use the debug module to log detailed information about task outcomes, variable states, or failure messages, which can be valuable for troubleshooting.
+
+
+
+
+5. register and when:
+
+Use register to capture the result of a task and then use when conditions to make decisions based on the success or failure of previous tasks.
+
