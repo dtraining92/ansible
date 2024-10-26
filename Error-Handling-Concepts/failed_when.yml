@@ -1,0 +1,14 @@
+---
+- name: Check log file for specific errors
+  hosts: webservers
+  tasks:
+    - name: Search for "Error" in log file
+      shell: "grep 'main' /home/ubuntu/errors/error.log"
+      register: log_check #capture and store the output (stdout, stderr, and return code) of a task
+      failed_when: " 'Error'log_check.stdout"
+
+    - name: Print result if no errors found
+      debug:
+        msg: "No critical errors found in the log."
+      when: log_check.stdout == ""
+
