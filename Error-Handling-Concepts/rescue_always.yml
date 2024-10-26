@@ -1,0 +1,33 @@
+---
+- name: Install and configure Nginx
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Nginx
+      block:
+        - name: Install Nginx
+          apt:
+            name: nginx
+            state: present
+        - name: Start Nginx service
+          service:
+            name: nginx
+            state: present
+        - name: Verify Nginx status
+          command: systemctl status nginx
+          register: nginx_status
+          failed_when: "'active (running)' not in nginx_status.stdout"
+      rescue:
+        - name: Log failure
+          debug:
+            msg: "Nginx installation or configuration failed. Please check the logs."
+        - name: Uninstall Nginx
+          apt:
+            name: nginx
+            state: absent
+            purge: yes
+            update_cache: yes
+      always:
+        - name: Ensure all necessary actions are taken
+          debug:
+            msg: "Finished checking and handling Nginx status."
