@@ -1,0 +1,23 @@
+---
+- name: Check disk space before deployment
+  hosts: all
+  tasks:
+    - name: Check available disk space
+      shell: "df -h / | grep -v Filesystem | awk '{print $5}' | sed 's/%//'"
+      register: disk_space
+      ignore_errors: yes
+
+    - name: Notify if disk space is low
+      debug:
+        msg: "Warning: Disk space is below 20%. Free up space before proceeding."
+      when: disk_space.stdout | int < 20
+
+    - name: Abort if disk space is low
+      fail:
+        msg: "Insufficient disk space for deployment."
+      when: disk_space.stdout | int < 20
+
+    - name: Deploy application
+      debug:
+        msg: "Proceeding with deployment as disk space is sufficient."
+      when: disk_space.stdout | int >= 20
