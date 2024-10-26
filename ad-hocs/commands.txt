@@ -1,0 +1,38 @@
+Ad-hoc commands:
+
+Ansible ad-hoc commands are one-off commands that allow you to quickly run a module on a specified host or group without writing a playbook. They are ideal for performing simple, quick tasks on remote servers, like checking service statuses, installing packages, or managing files.
+
+ Ad-hoc commands are designed to execute one module at a time, perfect for one-time tasks.
+You don’t need to create a playbook, as ad-hoc commands are executed directly from the command line.
+They are useful for quick actions like testing connectivity, running updates, or gathering system information
+ Like playbooks, ad-hoc commands use Ansible modules (e.g., ping, apt, yum, service, etc.).
+Common Ad-Hoc Commands:
+
+Check connectivity to hosts:
+ansible all -m ping -i inventory.ini
+
+Use the setup module to gather facts about hosts:
+ansible all -m setup -i inventory.ini
+
+
+
+
+Use the apt module to install apache2 on all hosts:
+ansible all -m apt -a "name=apache2 state=present" -b
+
+ansible all -m shell -a "systemctl status apache2" -b -i inventory.ini
+
+         ansible all -m apt -a "name=apache2 purge" -b -i inventory.ini
+
+
+Restart the nginx service on a group of servers:
+ansible all -m service -a "name=nginx state=restarted" -b
+
+Copy a file to a specific directory on target hosts:
+ansible all -m copy -a "src=/path/to/local/file dest=/path/to/remote/file"
+
+Run a command using the shell or command module:
+ansible all -m shell -a "df -h"
+
+
+
