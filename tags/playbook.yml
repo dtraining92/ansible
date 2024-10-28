@@ -1,0 +1,76 @@
+---
+- name: Setup and Secure Web Server
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Update apt package index
+      apt:
+        update_cache: yes
+      tags: update
+
+    - name: Purge Nginx and its common package (if installed)
+      apt:
+        name:
+          - nginx
+          - nginx-common
+        state: absent
+      tags: nginx_remove
+
+    - name: Remove unused dependencies
+      apt:
+        autoremove: yes
+      tags: cleanup
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+      tags: nginx_install
+ansible-playbook -i inventory.ini tags-i.yml --tags "nginx_install, nginx_start,nginx_service"
+    - name: Start and enable Nginx service
+      systemd:
+        name: nginx
+        state: started
+        enabled: true
+      tags: nginx_start
+
+    - name: Restart Nginx to apply configuration
+      systemd:
+        name: nginx
+        state: restarted
+      tags: nginx_service
+
+    # Optional: Stop Nginx service
+    - name: Stop Nginx service
+      systemd:
+        name: nginx
+        state: stopped
+      tags: nginx_stop
+
+    # Optional: Remove Nginx package
+    - name: Remove Nginx package
+      apt:
+        name: nginx
+        state: absent
+      tags: nginx_absent
+
+    # Optional: Remove Nginx configuration files
+    - name: Remove Nginx configuration files
+      file:
+        path: /etc/nginx
+        state: absent
+      tags: nginx_files
+
+
+# Run only the tasks for installing and configuring Nginx
+ansible-playbook -i inventory.ini, tags-i.yml --tags "nginx_install,nginx_service"
+
+# Skip the SSL configuration tasks
+ansible-playbook -i inventory.ini tags-i.yml --skip-tags "nginx_stop,nginx_absent,nginx_files"
+
+
+---------------------
+inventory.ini 
+---------------------
+[local]
+localhost ansible_connection=local
