@@ -1,0 +1,37 @@
+---
+- name: Install Docker on localhost
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Update apt package index
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Ensure Docker service is started and enabled
+      systemd:
+        name: docker
+        state: started
+        enabled: true
+    - name: Run Docker container using local image #build docker image 
+      docker_image:
+        path: path of the Dockerfile
+        name: image_name 
+    - name: Run Docker container using local image #build docker image 
+      docker_container:
+        name: my_container
+        image: my_local_image:latest  # Replace with your local image name and tag
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:8080"  # Replace with the appropriate port mapping
+
+------
+inventory.ini 
+------------
+[local]
+localhost ansible_connection=local
